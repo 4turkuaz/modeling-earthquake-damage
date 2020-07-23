@@ -1,0 +1,4 @@
+venv
+DATA/train_labels.csv
+DATA/train_values.csv
+DATA/test_values.csv
