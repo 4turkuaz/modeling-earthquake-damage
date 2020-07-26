@@ -4,6 +4,8 @@ import pandas as pd
 import xgboost as xgb
 import numpy as np
 import lightgbm as lgbm
+from datetime import datetime
+from sklearn.model_selection import KFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
@@ -15,6 +17,8 @@ from sklearn.gaussian_process.kernels import RBF
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.metrics import f1_score
+
 
 TRAIN_VALUES = 'DATA/train_values.csv'
 TRAIN_LABELS = 'DATA/train_labels.csv'
@@ -50,12 +54,14 @@ classifiers = [
 
 eclf1 = VotingClassifier(estimators=classifiers, voting='soft', n_jobs = -1)
 
-
 train_x = pd.read_csv(TRAIN_VALUES)
 train_y = pd.read_csv(TRAIN_LABELS)
 test_x = pd.read_csv(TEST_VALUES)
 
-from sklearn.metrics import f1_score
+categorical_columns = list(train_x.columns[8:15]) + ['legal_ownership_status']
+for col in categorical_columns:
+    train_x[col] = pd.Categorical((train_x[col])).codes
+    test_x[col] = pd.Categorical((test_x[col])).codes
 
 results = []
 print('Time started: ' + datetime.now().strftime("%H:%M:%S"))
